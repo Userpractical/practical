@@ -1,63 +1,78 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Practical Code Manager</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A simple library of practical programs with one-click code copying.">
+  <title>Practical Code Library</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><span class="logo">{"</>"}</span><div><h1>Practical Code Manager</h1><p>Organize, edit and save your practical files</p></div></div>
-    <div class="top-actions">
-      <button id="newFileBtn" class="secondary">＋ New file</button>
-      <button id="uploadBtn" class="secondary">↑ Add files</button>
-      <button id="saveBtn" class="primary">Save changes</button>
-    </div>
-    <input id="fileInput" type="file" multiple hidden>
+    <a class="brand" href="#"><span class="brand-icon">&lt;/&gt;</span> Practical Code Library</a>
+    <span class="top-note">Student coding resources</span>
   </header>
 
   <main class="layout">
     <aside class="sidebar">
-      <div class="side-heading"><h2>Your practicals</h2><span id="fileCount" class="count">0 files</span></div>
-      <div class="practical-list" id="practicalList"></div>
-      <div class="side-bottom">
-        <button id="exportAllBtn" class="wide secondary">↓ Download all files (.zip)</button>
-        <button id="importBackupBtn" class="wide secondary">↑ Restore backup (.json)</button>
-        <input id="backupInput" type="file" accept=".json,application/json" hidden>
-        <p>Files are saved in this browser on this device.</p>
+      <div class="side-heading">YOUR LIBRARY</div>
+      <button class="nav-item active" id="allButton">▦ <span>All practicals</span><b id="count"></b></button>
+      <div class="side-tip">
+        <strong>Quick tip</strong>
+        <p>Select a practical, then press <b>Copy Code</b> to copy the complete program.</p>
       </div>
+      <div class="side-footer">Simple • Fast • Free</div>
     </aside>
 
-    <section class="workspace">
-      <div class="filebar">
-        <div class="current-file"><span class="file-dot"></span><span id="currentFileName">Select a file to begin</span><span id="savedStatus" class="status">No file selected</span></div>
-        <div class="file-actions">
-          <button id="renameBtn" class="icon-btn" title="Rename file" disabled>✎</button>
-          <button id="downloadBtn" class="icon-btn" title="Download this file" disabled>↓</button>
-          <button id="deleteBtn" class="icon-btn danger" title="Delete file" disabled>×</button>
-        </div>
+    <section class="content">
+      <div class="intro">
+        <p class="eyebrow">CODE COLLECTION</p>
+        <h1>Your practicals, in one place.</h1>
+        <p class="subtitle">Find a practical, view its source code, and copy it in one click.</p>
       </div>
-      <div class="editor-wrap" id="editorWrap">
-        <div class="empty-state" id="emptyState"><div class="empty-icon">{"</>"}</div><h2>Your practical workspace</h2><p>Select a practical on the left, or create a new file.</p><button id="emptyNewBtn" class="primary">Create your first file</button></div>
-        <textarea id="codeEditor" spellcheck="false" aria-label="Code editor"></textarea>
+
+      <div class="toolbar">
+        <label class="search-wrap">
+          <span>⌕</span>
+          <input id="searchInput" type="search" placeholder="Search practicals or topics..." autocomplete="off">
+        </label>
+        <select id="languageFilter" aria-label="Filter by language">
+          <option value="all">All languages</option>
+          <option value="C">C</option>
+          <option value="Bash">Bash</option>
+          <option value="Python">Python</option>
+          <option value="Text">Text</option>
+          <option value="Dockerfile">Dockerfile</option>
+        </select>
       </div>
-      <footer class="editor-footer"><span id="languageLabel">Language: —</span><span>Tip: Press Ctrl + S to save</span></footer>
+
+      <div class="workspace">
+        <section class="practical-list">
+          <div class="section-label">PRACTICAL LIST <span id="resultCount"></span></div>
+          <div id="practicalCards"></div>
+        </section>
+
+        <section class="code-panel">
+          <div class="code-heading">
+            <div>
+              <div class="section-label">SOURCE CODE</div>
+              <h2 id="codeTitle">Select a practical</h2>
+              <p id="codeDescription">Choose an item from the list to view its code.</p>
+            </div>
+            <span class="language-pill" id="languagePill">CODE</span>
+          </div>
+          <div class="code-actions">
+            <span id="lineCount">No code selected</span>
+            <button id="copyButton" class="copy-button" disabled>▣ &nbsp;Copy Code</button>
+          </div>
+          <pre class="code-box"><code id="codeOutput">Select a practical from the list to display its source code here.</code></pre>
+          <p class="copy-status" id="copyStatus" aria-live="polite"></p>
+        </section>
+      </div>
+      <footer>Made for practical learning · Use the code responsibly and test it before submission.</footer>
     </section>
   </main>
-  <div id="toast" role="status" aria-live="polite"></div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/shell/shell.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="app.js"></script>
+  <script src="practicals.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
